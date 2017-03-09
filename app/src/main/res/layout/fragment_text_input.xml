@@ -1,0 +1,47 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:tag="text_input_fragment"
+    tools:context="com.fridget.TextInputFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <EditText
+            android:id="@+id/fridgetMessageBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="124dp"
+            android:ems="10"
+            android:hint="Ask Fridget about fridge contents"
+            android:inputType="textMultiLine"
+            android:selectAllOnFocus="false"
+            android:singleLine="false" />
+
+        <TextView
+            android:id="@+id/textInputInfoLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="74dp"
+            android:text="Talk to Fridget below" />
+
+        <Button
+            android:id="@+id/textInputButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fridgetMessageBox"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="78dp"
+            android:background="@color/colorPrimary"
+            android:text="Send"
+            android:textSize="18sp" />
+    </RelativeLayout>
+</FrameLayout>

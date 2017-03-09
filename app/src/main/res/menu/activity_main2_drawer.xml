@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/home"
+            android:icon="@drawable/ic_keyboard_voice_black_24dp"
+            android:title="Home" />
+        <item
+            android:id="@+id/text_mode"
+            android:icon="@drawable/ic_keyboard_black_24dp"
+            android:title="Text Mode" />
+        <item
+            android:id="@+id/simulation"
+            android:icon="@drawable/ic_bubble_chart_black_24dp"
+            android:title="Simulation" />
+    </group>
+
+    <item
+        android:id="@+id/exit"
+        android:icon="@drawable/ic_exit_to_app_black_24dp"
+        android:title="Exit" />
+
+</menu>
