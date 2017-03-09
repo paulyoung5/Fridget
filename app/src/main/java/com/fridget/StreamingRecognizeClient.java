@@ -105,8 +105,6 @@ public class StreamingRecognizeClient implements StreamObserver<StreamingRecogni
 
             if(result.getIsFinal()) {
 
-                finish();
-
                 List<SpeechRecognitionAlternative> alternatives = result.getAlternativesList();
 
                 for (SpeechRecognitionAlternative alternative : alternatives) {
@@ -122,6 +120,9 @@ public class StreamingRecognizeClient implements StreamObserver<StreamingRecogni
                     }
 
                 }
+
+                finish();
+
             }
 
         }

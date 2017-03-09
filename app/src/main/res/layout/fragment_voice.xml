@@ -31,29 +31,6 @@
                 android:visibility="invisible"
                 tools:visibility="invisible" />
 
-            <TextView
-                android:id="@+id/infoLabel"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/voiceInputButton"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="19dp"
-                android:layout_marginTop="50dp"
-                android:layout_weight="1"
-                android:text="@string/get_started"
-                android:textAlignment="center"
-                android:textSize="18sp" />
-
-            <ImageButton
-                android:id="@+id/voiceInputButton"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:contentDescription="@string/microphone_button_content_description"
-                android:visibility="visible"
-                app:srcCompat="@drawable/ic_keyboard_voice_black_24dp" />
-
             <pl.bclogic.pulsator4droid.library.PulsatorLayout
                 android:id="@+id/pulsator"
                 android:layout_width="match_parent"
@@ -69,6 +46,28 @@
                 app:pulse_repeat="0"
                 app:pulse_startFromScratch="false">
 
+                <TextView
+                    android:id="@+id/infoLabel"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="67dp"
+                    android:layout_weight="1"
+                    android:text="@string/get_started"
+                    android:textAlignment="center"
+                    android:textSize="18sp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true" />
+
+                <ImageButton
+                    android:id="@+id/voiceInputButton"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_below="@+id/infoLabel"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="21dp"
+                    android:contentDescription="@string/microphone_button_content_description"
+                    android:visibility="visible"
+                    app:srcCompat="@drawable/ic_keyboard_voice_black_24dp" />
             </pl.bclogic.pulsator4droid.library.PulsatorLayout>
 
         </RelativeLayout>
