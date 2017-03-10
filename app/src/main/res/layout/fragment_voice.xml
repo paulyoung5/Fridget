@@ -72,17 +72,6 @@
 
         </RelativeLayout>
 
-        <CheckBox
-            android:id="@+id/checkBox"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="20dp"
-            android:layout_weight="1"
-            android:text="Listening in the background"
-            android:textAlignment="viewStart" />
-
     </LinearLayout>
 
 

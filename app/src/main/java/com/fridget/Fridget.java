@@ -10,6 +10,7 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -17,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -44,14 +46,16 @@ public class Fridget {
     private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
 
     protected AudioRecord mAudioRecord = null;
-    private Thread mRecordingThread = null;
+    protected Thread mRecordingThread = null;
     protected boolean mIsRecording = false;
 
     protected StreamingRecognizeClient mStreamingClient;
-    private int mBufferSize;
+    protected int mBufferSize;
 
     protected String userSpeech;
     protected View rootView;
+
+    protected boolean shouldContinueDialogue = false;
 
     public Fridget(Context context, View rootView) {
 
@@ -71,6 +75,45 @@ public class Fridget {
 
         this.rootView = rootView;
 
+        final UtteranceProgressListener utteranceProgressListener = new UtteranceProgressListener() {
+            @Override
+            public void onStart(String utteranceId) {
+
+                Log.i(Fridget.class.getSimpleName(), "onStart() called");
+
+            }
+
+            @Override
+            public void onDone(String utteranceId) {
+
+                /* TODO: start speech recognition/recording after TTS finishes speaking
+                Log.i(Fridget.class.getSimpleName(), "onDone() called");
+
+                if(shouldContinueDialogue) {
+
+                    mAudioRecord.startRecording();
+                    mIsRecording = true;
+                    mRecordingThread = new Thread(new Runnable() {
+                        public void run() {
+                            readData();
+                        }
+                    }, "AudioRecorder Thread");
+                    mRecordingThread.start();
+
+                    toggleRecordingButton(false);
+                }
+                */
+
+            }
+
+            @Override
+            public void onError(String utteranceId) {
+
+                Log.i(Fridget.class.getSimpleName(), "onError() called");
+
+            }
+        };
+
         // Set up text-to-speech
         textToSpeech = new TextToSpeech(appContext, new TextToSpeech.OnInitListener() {
 
@@ -82,6 +125,8 @@ public class Fridget {
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     Log.e("TTS", "This Language is not supported");
                 }
+
+                int listenerSet = textToSpeech.setOnUtteranceProgressListener(utteranceProgressListener);
 
             }
 
@@ -133,7 +178,6 @@ public class Fridget {
 
     protected void startRecording() {
 
-        this.speak("Okay, I'm listening");
 
         mAudioRecord.startRecording();
         mIsRecording = true;
@@ -145,6 +189,11 @@ public class Fridget {
         mRecordingThread.start();
 
         toggleRecordingButton(false);
+
+        // TODO:
+        // Start speaking (recording will be fired in TTS onDone callback)
+        // Essentially, set a flag that says "we expect the user to speak after we stop speaking"
+        //this.speak("Okay, I'm listening", true);
 
     }
 
@@ -191,7 +240,9 @@ public class Fridget {
     }
 
 
-    public void speak(String message) {
+    public void speak(String message, boolean shouldContinueDialogue) {
+
+        this.shouldContinueDialogue = shouldContinueDialogue;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             this.textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null, null);
@@ -206,6 +257,7 @@ public class Fridget {
         // Stop resources
         mIsRecording = false;
         mAudioRecord.stop();
+        mStreamingClient.finish();
 
         // Start processing the request
         processSpeech();
@@ -235,11 +287,11 @@ public class Fridget {
 
             // Update these dummy values with our dialogue response
             String dialogueRepsonse = "Ok, I heard you: " + userSpeech;
-            boolean shouldContinueDialogue = true;
+            this.shouldContinueDialogue = true;
 
             // -------------------------------------------------------------
 
-            this.speak(dialogueRepsonse); // Say the dialogue response
+            this.speak(dialogueRepsonse, shouldContinueDialogue); // Say the dialogue response
 
             if(shouldContinueDialogue) {
 

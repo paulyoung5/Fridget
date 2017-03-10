@@ -1,6 +1,7 @@
 package com.fridget;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.auth.oauth2.GoogleCredentials;
@@ -93,6 +94,39 @@ public class StreamingRecognizeClient implements StreamObserver<StreamingRecogni
         requestObserver.onNext(initial);
     }
 
+    public class TranscriptLoader extends AsyncTask<Void,Void,Void> {
+
+        private List<SpeechRecognitionAlternative> alternatives;
+
+        public TranscriptLoader(List<SpeechRecognitionAlternative> alternatives) {
+            this.alternatives = alternatives;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            // Get the transcription
+
+            for (SpeechRecognitionAlternative alternative : alternatives) {
+
+                try {
+                    // Pass the transcription to Fridget
+                    fridget.userSpeech = alternative.getTranscript();
+                } catch (Exception e) {
+                    Log.e(StreamingRecognizeClient.this.getClass().getSimpleName(), "An error occurred: "+e.getMessage());
+                }
+
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void param) {
+            // Now stop all resources
+            fridget.stopRecording();
+        }
+    }
+
     @Override
     public void onNext(StreamingRecognizeResponse response) {
 
@@ -105,23 +139,7 @@ public class StreamingRecognizeClient implements StreamObserver<StreamingRecogni
 
             if(result.getIsFinal()) {
 
-                List<SpeechRecognitionAlternative> alternatives = result.getAlternativesList();
-
-                for (SpeechRecognitionAlternative alternative : alternatives) {
-
-                    try {
-                        // Pass the transcription to Fridget
-                        fridget.userSpeech = alternative.getTranscript();
-
-                        // Now stop all resources
-                        fridget.stopRecording();
-                    } catch (Exception e) {
-                        Log.e(StreamingRecognizeClient.this.getClass().getSimpleName(), "An error occurred: "+e.getMessage());
-                    }
-
-                }
-
-                finish();
+                new TranscriptLoader(result.getAlternativesList()).execute();
 
             }
 
