@@ -120,7 +120,7 @@ public class TextInputFragment extends Fragment {
             public void onClick(View v) {
 
                 String text = fridgetMessageBox.getText().toString();
-                fridget.speak(text, false);
+                fridget.speak(text);
                 textInputInfoLabel.setText(text);
                 fridgetMessageBox.setText("");
 

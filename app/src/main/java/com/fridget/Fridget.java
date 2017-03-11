@@ -181,11 +181,13 @@ public class Fridget {
 
         mAudioRecord.startRecording();
         mIsRecording = true;
+
         mRecordingThread = new Thread(new Runnable() {
             public void run() {
                 readData();
             }
         }, "AudioRecorder Thread");
+
         mRecordingThread.start();
 
         toggleRecordingButton(false);
@@ -240,9 +242,7 @@ public class Fridget {
     }
 
 
-    public void speak(String message, boolean shouldContinueDialogue) {
-
-        this.shouldContinueDialogue = shouldContinueDialogue;
+    public void speak(String message) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             this.textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null, null);
@@ -254,10 +254,21 @@ public class Fridget {
 
     public void stopRecording() {
 
+        // We've got the user's transcript; update the view
+        PulsatorLayout pulsator = ((PulsatorLayout) rootView.findViewById(R.id.pulsator));
+        TextView infoLabel =  (TextView) this.rootView.findViewById(R.id.infoLabel);
+        ProgressBar loadingSpinner = ((ProgressBar) this.rootView.findViewById(R.id.loadingProgress));
+
+        // Show that we've stopped listening, and now we're processing the speech
+        pulsator.stop();
+        infoLabel.setText(R.string.processing_speech);
+        loadingSpinner.setVisibility(View.VISIBLE);
+
         // Stop resources
         mIsRecording = false;
         mAudioRecord.stop();
         mStreamingClient.finish();
+
 
         // Start processing the request
         processSpeech();
@@ -273,11 +284,11 @@ public class Fridget {
             TextView infoLabel =  (TextView) this.rootView.findViewById(R.id.infoLabel);
             ProgressBar loadingSpinner = ((ProgressBar) this.rootView.findViewById(R.id.loadingProgress));
 
+            // Show the transcript within the infoLabel
             infoLabel.setText(userSpeech);
 
-            // Show that we've stopped listening, and now we're processing the speech
-            pulsator.stop();
-            loadingSpinner.setVisibility(View.VISIBLE);
+            // Hide the spinner
+            loadingSpinner.setVisibility(View.INVISIBLE);
 
             // -------------------------------------------------------------
 
@@ -286,24 +297,34 @@ public class Fridget {
             // (Using userSpeech)
 
             // Update these dummy values with our dialogue response
-            String dialogueRepsonse = "Ok, I heard you: " + userSpeech;
-            this.shouldContinueDialogue = true;
+            String dialogueResponse = userSpeech;
+            this.shouldContinueDialogue = false;
 
             // -------------------------------------------------------------
 
-            this.speak(dialogueRepsonse, shouldContinueDialogue); // Say the dialogue response
+            this.speak(dialogueResponse); // Say the dialogue response
 
             if(shouldContinueDialogue) {
 
+                try {
+                    Thread.sleep(3000);
+                } catch(Exception e) {
+                    Log.e(Fridget.class.getSimpleName(), e.getMessage());
+                }
+
                 // Start listening again
                 loadingSpinner.setVisibility(View.INVISIBLE);
+
                 pulsator.start();
+
                 infoLabel.setText(R.string.listening);
+
                 this.startRecording();
 
             } else {
 
-                infoLabel.setText(dialogueRepsonse);
+                // Show the microphone button
+                toggleRecordingButton(true);
 
             }
 

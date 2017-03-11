@@ -137,6 +137,7 @@ public class VoiceFragment extends Fragment {
         this.fridget = new Fridget(this.appContext, view);
 
         this.pulsator = (PulsatorLayout) view.findViewById(R.id.pulsator);
+
         view.findViewById(R.id.voiceInputButton).setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
